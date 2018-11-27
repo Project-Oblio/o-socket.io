@@ -1,6 +1,6 @@
 {
   "name": "o-socket.io",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "",
   "main": "socketServer.js",
   "scripts": {
@@ -11,6 +11,8 @@
   "dependencies": {
     "dotenv": "^6.1.0",
     "http": "0.0.0",
-    "socket.io": "^2.1.1"
+    "redis": "^2.8.0",
+    "socket.io": "^2.1.1",
+    "socket.io-redis": "^5.2.0"
   }
 }
