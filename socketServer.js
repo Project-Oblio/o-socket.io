@@ -5,6 +5,9 @@ var socketServer = function(config){
 	var _this=this;
 	var port = config.port || 6001;
 	const server = require('http').createServer();
+	var redis = require('redis');
+	var redis2 = require('socket.io-redis');
+	
 	this.config=config || {};
 	const io = require('socket.io')(server, {
 		path: '/socket.io',
@@ -32,6 +35,30 @@ var socketServer = function(config){
 		//cookie: false,
 		wsEngine: "ws"
 	});
+	io.adapter(redis2({ host: 'localhost', port: 6379 }));
+
+	this.redisPub = redis.createClient();
+	this.redisSub = redis.createClient();
+	this.redisSub.on("message", function (channel, data) {
+		data = JSON.parse(data);
+		console.log("redis message");
+		console.log("Inside Redis_Sub: data from channel " + channel + ": " + (data.sendType));
+	});
+	this.redisSub.on("customEmit", function (channel, data) {
+		data = JSON.parse(data);
+		console.log("redis customEmit");
+		console.log("Inside Redis_Sub: data from channel " + channel + ": " + (data.sendType));
+		 
+	});
+	this.redisSub.on("app/Events/customEmit", function (channel, data) {
+		data = JSON.parse(data);
+		console.log("redis app/Events/customEmit");
+		console.log("Inside Redis_Sub: data from channel " + channel + ": " + (data.sendType));
+	});
+
+
+
+
 	this.io=io;
 	this.socketIdMap={};
 	io.on('connection',function(socket){
@@ -119,6 +146,7 @@ var socketServer = function(config){
 						// useful for ping pong
 						response.socketId=socket.id;
 						response.state=_this.socketIdMap[socket.id];
+						
 						if(typeof clientFunction!="undefined")clientFunction(response);
 					});
 				}else{
