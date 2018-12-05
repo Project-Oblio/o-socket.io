@@ -55,7 +55,7 @@ var socketServer = function(config){
 		console.log("redis app/Events/customEmit");
 		console.log("Inside Redis_Sub: data from channel " + channel + ": " + (data.sendType));
 	});
-
+	this.redisClient=_this.redisSub;
 
 
 
@@ -76,8 +76,9 @@ var socketServer = function(config){
 			});	
 		})
 		socket.on('disconnect',function(from){
-			if(typeof _this.socketIdMap[socket.id]!="undefined")delete _this.socketIdMap[socket.id];
-			_this.config.socketDisconnect(from);
+			//if(typeof _this.socketIdMap[socket.id]!="undefined")delete _this.socketIdMap[socket.id];
+			socket.socketId=socket.id;
+			_this.config.socketDisconnect(socket);
 		});
 		_this.assignEvents(socket);
 	});
@@ -132,20 +133,23 @@ var socketServer = function(config){
 	this.assignEvents=function(socket){
 		for(var key in _this.config.events){
 			socket.on(key,function(msg,clientFunction){
+				if(typeof msg.channel!="undefined")key=msg.channel;
 				var go=true;
 				if(typeof _this.config.events[key].socketAuth !="undefined"){
 					go = _this.config.events[key].socketAuth(msg);
 				}
 				if(typeof _this.socketIdMap[socket.id]=="undefined"){
 					go=false;
+				}else{
+					msg.socketId=socket.id;
 				}
 				if(go){
 					_this.config.events[key](msg,function(response){
 						//optional
 						// call a function, on the client, using data from the server	
 						// useful for ping pong
-						response.socketId=socket.id;
-						response.state=_this.socketIdMap[socket.id];
+						//response.socketId=socket.id;
+						//response.state=_this.socketIdMap[socket.id];
 						
 						if(typeof clientFunction!="undefined")clientFunction(response);
 					});
