@@ -1,0 +1,73 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/root/.nvm/versions/node/v7.7.4/bin/node',
+1 verbose cli   '/root/.nvm/versions/node/v7.7.4/bin/npm',
+1 verbose cli   'version',
+1 verbose cli   'patch',
+1 verbose cli   '--force' ]
+2 info using npm@4.1.2
+3 info using node@v7.7.4
+4 warn using --force I sure hope you know what you are doing.
+5 info git [ 'status', '--porcelain' ]
+6 info lifecycle o-socket.io@1.0.10~preversion: o-socket.io@1.0.10
+7 silly lifecycle o-socket.io@1.0.10~preversion: no script for preversion, continuing
+8 verbose version.write data { name: 'o-socket.io',
+8 verbose version.write   version: '1.0.10',
+8 verbose version.write   description: '',
+8 verbose version.write   main: 'socketServer.js',
+8 verbose version.write   scripts: { test: 'echo "Error: no test specified" && exit 1' },
+8 verbose version.write   author: '',
+8 verbose version.write   license: 'ISC',
+8 verbose version.write   dependencies:
+8 verbose version.write    { dotenv: '^6.1.0',
+8 verbose version.write      http: '0.0.0',
+8 verbose version.write      redis: '^2.8.0',
+8 verbose version.write      'socket.io': '^2.1.1',
+8 verbose version.write      'socket.io-redis': '^5.2.0' } } to package.json
+9 info lifecycle o-socket.io@1.0.10~version: o-socket.io@1.0.10
+10 silly lifecycle o-socket.io@1.0.10~version: no script for version, continuing
+11 info git [ 'add', '/home/oblio/socketServer/package.json' ]
+12 info git [ 'commit', '-m', '1.0.10' ]
+13 verbose stack Error: Command failed: git commit -m 1.0.10
+13 verbose stack
+13 verbose stack *** Please tell me who you are.
+13 verbose stack
+13 verbose stack Run
+13 verbose stack
+13 verbose stack   git config --global user.email "you@example.com"
+13 verbose stack   git config --global user.name "Your Name"
+13 verbose stack
+13 verbose stack to set your account's default identity.
+13 verbose stack Omit --global to set the identity only in this repository.
+13 verbose stack
+13 verbose stack fatal: unable to auto-detect email address (got 'root@oblio.(none)')
+13 verbose stack
+13 verbose stack     at ChildProcess.exithandler (child_process.js:205:12)
+13 verbose stack     at emitTwo (events.js:106:13)
+13 verbose stack     at ChildProcess.emit (events.js:194:7)
+13 verbose stack     at maybeClose (internal/child_process.js:899:16)
+13 verbose stack     at Socket.<anonymous> (internal/child_process.js:342:11)
+13 verbose stack     at emitOne (events.js:96:13)
+13 verbose stack     at Socket.emit (events.js:191:7)
+13 verbose stack     at Pipe._handle.close [as _onclose] (net.js:513:12)
+14 verbose cwd /home/oblio/socketServer
+15 error Linux 4.10.0-28-generic
+16 error argv "/root/.nvm/versions/node/v7.7.4/bin/node" "/root/.nvm/versions/node/v7.7.4/bin/npm" "version" "patch" "--force"
+17 error node v7.7.4
+18 error npm  v4.1.2
+19 error code 128
+20 error Command failed: git commit -m 1.0.10
+20 error
+20 error *** Please tell me who you are.
+20 error
+20 error Run
+20 error
+20 error   git config --global user.email "you@example.com"
+20 error   git config --global user.name "Your Name"
+20 error
+20 error to set your account's default identity.
+20 error Omit --global to set the identity only in this repository.
+20 error
+20 error fatal: unable to auto-detect email address (got 'root@oblio.(none)')
+21 error If you need help, you may report this error at:
+21 error     <https://github.com/npm/npm/issues>
+22 verbose exit [ 1, true ]
