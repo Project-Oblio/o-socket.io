@@ -1,6 +1,6 @@
 {
   "name": "o-socket.io",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "",
   "main": "socketServer.js",
   "scripts": {
