@@ -61,15 +61,24 @@ var socketServer = function(config){
 
 	this.io=io;
 	this.socketIdMap={};
+	this.userIdMap=[];
 	io.on('connection',function(socket){
 		
 		socket.on('auth',function(message,callback){
 			_this.config.allowRequest(socket.id,message.auth,function(res){
-				if(typeof res.error!="undefined"){
+				
+				if(typeof res.error!="undefined" || !res){
 					callback(false);	
 					socket.disconnect();
 				}
 				else{
+					var socketId = socket.id;
+					_this.socketIdMap[socketId]=res;
+					if(typeof res.id!="undefined"){
+						if(typeof _this.userIdMap[res.id]=="undefined")_this.userIdMap[res.id]={};
+						_this.userIdMap[res.id][socketId]=_this.socketIdMap[socketId];
+					}
+					else throw 'Please include an "id" for the authorized user corresponding to your DB'
 					callback(res);
 					_this.config.socketConnect();
 				}
