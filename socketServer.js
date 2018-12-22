@@ -3,11 +3,13 @@ var socketServer = function(config){
 	// https://socket.io/docs/emit-cheatsheet/
 	var fs = require("fs");
 	var _this=this;
+	var socketServer=this;
 	var port = config.port || 6001;
 	const server = require('http').createServer();
-	var redis = require('redis');
-	var redis2 = require('socket.io-redis');
-	
+	var Redis = require('o-redis');
+	this.redis = Redis.redis;
+	this.oredis= new Redis();
+ 
 	this.config=config || {};
 	const io = require('socket.io')(server, {
 		path: '/socket.io',
@@ -35,57 +37,56 @@ var socketServer = function(config){
 		//cookie: false,
 		wsEngine: "ws"
 	});
-	io.adapter(redis2({ host: 'localhost', port: 6379 }));
-
-	this.redisPub = redis.createClient();
-	this.redisSub = redis.createClient();
-	this.redisSub.on("message", function (channel, data) {
-		data = JSON.parse(data);
-		console.log("redis message");
-		console.log("Inside Redis_Sub: data from channel " + channel + ": " + (data.sendType));
-	});
-	this.redisSub.on("customEmit", function (channel, data) {
-		data = JSON.parse(data);
-		console.log("redis customEmit");
-		console.log("Inside Redis_Sub: data from channel " + channel + ": " + (data.sendType));
-		 
-	});
-	this.redisSub.on("app/Events/customEmit", function (channel, data) {
-		data = JSON.parse(data);
-		console.log("redis app/Events/customEmit");
-		console.log("Inside Redis_Sub: data from channel " + channel + ": " + (data.sendType));
-	});
-	this.redisClient=_this.redisSub;
-
-
+	
 
 	this.io=io;
 	this.socketIdMap={};
-	this.userIdMap=[];
-	io.on('connection',function(socket){
+	this.userIdMap={};
+	function checkUserInt(message){
 		
+		return isInt
+	}
+	this.getUserObjFromMessage=function(message){
+		console.log(message);
+		console.log(_this.socketIdMap);
+		console.log(_this.userIdMap);
+		var user_id = _this.socketIdMap[message.socketId].id;
+		var isInt = Number.isInteger(user_id);
+		if(!isInt)return false;
+		else{
+			return _this.userIdMap[user_id];
+		}
+	}
+	this.getUserObjectFromMessage=_this.getUserObjFromMessage;
+
+	this.setUserObject=function(userObject){
+		_this.userIdMap[userObject.id]=userObject;
+	}
+	this.setUserObj=_this.setUserObject;
+	io.on('connection',function(socket){
 		socket.on('auth',function(message,callback){
-			_this.config.allowRequest(socket.id,message.auth,function(res){
+			var ret = {"socketId":socket.id};
+			for(var key in message){
+				ret[key]=message[key];
+			}
+			_this.config.allowRequest(ret,function(res){
 				
 				if(typeof res.error!="undefined" || !res){
-					callback(false);	
+					callback(res);	
 					socket.disconnect();
 				}
 				else{
 					var socketId = socket.id;
-					_this.socketIdMap[socketId]=res;
-					if(typeof res.id!="undefined"){
-						if(typeof _this.userIdMap[res.id]=="undefined")_this.userIdMap[res.id]={};
-						_this.userIdMap[res.id][socketId]=_this.socketIdMap[socketId];
+					if(typeof _this.userIdMap[res.id]=="undefined"){
+						_this.userIdMap[res.id]=res;
 					}
-					else throw 'Please include an "id" for the authorized user corresponding to your DB'
+					_this.socketIdMap[socketId]=_this.userIdMap[res.id];
 					callback(res);
 					_this.config.socketConnect();
 				}
 			});	
 		})
 		socket.on('disconnect',function(from){
-			//if(typeof _this.socketIdMap[socket.id]!="undefined")delete _this.socketIdMap[socket.id];
 			socket.socketId=socket.id;
 			_this.config.socketDisconnect(socket);
 		});
@@ -100,7 +101,8 @@ var socketServer = function(config){
 				username != socket.id &&
 				username != _this.socketIdMap[socket.id].id
 				) continue;
-			_this.socketIdMap[socket.id][key]=object;
+			var user_id = _this.socketIdMap[socket.id].id;
+			_this.userIdMap[user_id][key]=object;
 			break;
 		}
 	}
@@ -153,6 +155,8 @@ var socketServer = function(config){
 					msg.socketId=socket.id;
 				}
 				if(go){
+					msg.userObject = _this.getUserObjFromMessage(msg);
+					msg.user=msg.userObject;
 					_this.config.events[key](msg,function(response){
 						//optional
 						// call a function, on the client, using data from the server	
