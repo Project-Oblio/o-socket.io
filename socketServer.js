@@ -71,7 +71,7 @@ var socketServer = function(config){
 			}
 			_this.config.allowRequest(ret,function(res){
 				
-				if(typeof res.error!="undefined" || !res){
+				if(typeof res.error!="undefined" || !res || typeof res.disconnect!="undefined"){
 					callback(res);	
 					socket.disconnect();
 				}
@@ -108,16 +108,30 @@ var socketServer = function(config){
 	}
 	this.sendMessage=function(message){
 		// send a message to everyone
-		var channel=message.channel || "all"
+		var channel=message.channel || message.key ||  "all"
 		var clients = Object.keys(io.sockets.sockets);
 		for(var client in clients){
 			var socket = io.sockets.sockets[clients[client]];
 			if(typeof message.to!="undefined"){			
 				if(typeof _this.socketIdMap[socket.id]=="undefined")continue;
-				if(	message.to.indexOf(_this.socketIdMap[socket.id].username)==-1 &&
-					message.to.indexOf(socket.id)==-1 &&
-					message.to.indexOf(_this.socketIdMap[socket.id].id)==-1 
-					) continue;
+				var to;
+				if(typeof message.to=="Object"){
+					if(typeof message.user.id!="undefined")to=message.user.id;
+					else if(typeof message.user.username!="undefined")to=message.user.username
+					else to=message.to;
+				}else{
+					to=message.to;
+				}
+				to=to+''; // convert whatever it is to a string;
+				console.log("here is to",to);
+				if(	to.indexOf(_this.socketIdMap[socket.id].username)==-1 &&
+					to.indexOf(socket.id)==-1 &&
+					to.indexOf(_this.socketIdMap[socket.id].id)==-1 
+					){
+					console.log(message.to," is not ",_this.socketIdMap[socket.id].id,_this.socketIdMap[socket.id]);
+					 continue;
+				}
+				console.log("Sending message to socket with username",_this.socketIdMap[socket.id.username]);
 				var message2=JSON.parse(JSON.stringify(message));
 				delete message2.to;
 				socket.emit(channel,message);
