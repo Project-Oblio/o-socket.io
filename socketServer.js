@@ -131,10 +131,10 @@ var socketServer = function(config){
 					console.log(message.to," is not ",_this.socketIdMap[socket.id].id,_this.socketIdMap[socket.id]);
 					 continue;
 				}
-				console.log("Sending message to socket with username",_this.socketIdMap[socket.id.username]);
+				console.log("Sending message to socket with username",_this.socketIdMap[socket.id].username);
 				var message2=JSON.parse(JSON.stringify(message));
 				delete message2.to;
-				socket.emit(channel,message);
+				socket.emit(channel,message2);
 			}else socket.emit(channel,message);
 		}
 	}
