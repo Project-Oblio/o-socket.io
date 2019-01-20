@@ -22,13 +22,13 @@ var socketServer = function(config){
 			/*var allow=true;
 			if(typeof _this.config.allowRequest!="undefined"){
 				// dont know what to do here yet
-				//console.log("key is not null");
+				
 				_this.config.allowRequest(request,function(res){
 					if(typeof res.error!="undefined")callback(403,false)
 					else callback(200,true);
 				});
 			}else{
-				console.log("Config accept request is undefined");*/
+				*/
 				callback(200,true);
 			//}
 			
@@ -47,9 +47,7 @@ var socketServer = function(config){
 		return isInt
 	}
 	this.getUserObjFromMessage=function(message){
-		console.log(message);
-		console.log(_this.socketIdMap);
-		console.log(_this.userIdMap);
+		
 		var user_id = _this.socketIdMap[message.socketId].id;
 		var isInt = Number.isInteger(user_id);
 		if(!isInt)return false;
@@ -112,7 +110,8 @@ var socketServer = function(config){
 		var clients = Object.keys(io.sockets.sockets);
 		for(var client in clients){
 			var socket = io.sockets.sockets[clients[client]];
-			if(typeof message.to!="undefined"){			
+			if(typeof message.to!="undefined"){
+				message.to+='';			
 				if(typeof _this.socketIdMap[socket.id]=="undefined")continue;
 				var to;
 				if(typeof message.to=="Object"){
@@ -123,22 +122,19 @@ var socketServer = function(config){
 					to=message.to;
 				}
 				to=to+''; // convert whatever it is to a string;
-				console.log("here is to",to);
 				if(	to.indexOf(_this.socketIdMap[socket.id].username)==-1 &&
 					to.indexOf(socket.id)==-1 &&
 					to.indexOf(_this.socketIdMap[socket.id].id)==-1 
 					){
-					console.log(message.to," is not ",_this.socketIdMap[socket.id].id,_this.socketIdMap[socket.id]);
+					
 					 continue;
 				}
-				console.log("Sending message to socket with username",_this.socketIdMap[socket.id].username);
 				var message2=JSON.parse(JSON.stringify(message));
 				delete message2.to;
 				socket.emit(channel,message2);
 			}else socket.emit(channel,message);
 		}
 	}
-	console.log("http://localhost:"+port);
 	server.listen(port);
 	this.setConfig=function(config){
 		for(var key in config){
@@ -200,18 +196,18 @@ var socketServer = function(config){
 		"origin":"*",
 		"events":{
 			"message":function(res,callback){
-				console.log("Received this on message channel",res);
+				
 			},
 			"cats":function(res,callback){
-				console.log("Received this on cats channel",res);
+				
 				callback({"data":"someotherkey"});
 			}
 		},
 		"socketConnect":function(res){
-			console.log("Socket connected");
+			
 		},
 		"socketDisconnect":function(res){
-			console.log("Socket disconnect",res);
+			
 		},
 		"socketAuth":function(msg,callback){
 			// authenticate a message
