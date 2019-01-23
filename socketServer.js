@@ -11,12 +11,14 @@ var socketServer = function(config){
 	this.oredis= new Redis();
  
 	this.config=config || {};
+	var origin="*:*";
+	if(typeof config.origin!="undefined")origin=config.origin;
 	const io = require('socket.io')(server, {
 		path: '/socket.io',
 		serveClient: false,
 		
-		/*origins: config.origins || config.origin || "*",
-		*/
+		origins: origin,
+		
 		pingInterval: 10000,
 		allowRequest:function(request,callback){
 			/*var allow=true;
