@@ -64,6 +64,8 @@ var socketServer = function(config){
 	}
 	this.setUserObj=_this.setUserObject;
 	io.on('connection',function(socket){
+		var clientIp = socket.request.connection.remoteAddress;
+		
 		socket.on('auth',function(message,callback){
 			var ret = {"socketId":socket.id};
 			for(var key in message){
@@ -79,6 +81,7 @@ var socketServer = function(config){
 					var socketId = socket.id;
 					if(typeof _this.userIdMap[res.id]=="undefined"){
 						_this.userIdMap[res.id]=res;
+						_this.userIdMap[res.id].ipAddress=clientIp;
 					}
 					_this.socketIdMap[socketId]=_this.userIdMap[res.id];
 					callback(res);
