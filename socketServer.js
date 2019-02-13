@@ -74,6 +74,7 @@ var socketServer = function(config){
 			_this.config.allowRequest(ret,function(res){
 				
 				if(typeof res.error!="undefined" || !res || typeof res.disconnect!="undefined"){
+					console.log("Allow request denied for message,ret",message,ret);
 					callback(res);	
 					socket.disconnect();
 				}
@@ -182,6 +183,8 @@ var socketServer = function(config){
 						if(typeof clientFunction!="undefined")clientFunction(response);
 					});
 				}else{
+					console.log("Disconnecting with key,msg,go,socket.id,socketIdMap[socket.id]",key, msg, go, socket.id, _this.socketIdMap[socket.id],_this.config.events[key].socketAuth); 
+					clientFunction({"error":true,"message":"It looks like we couldn't keep you logged in for some reason. Please discuss this error with us at admin@binauralboss.com."});
 					socket.disconnect();
 				}
 			});
